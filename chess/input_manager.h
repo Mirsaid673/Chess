@@ -3,6 +3,7 @@
 #include "../Engine/Core/application.h"
 #include "desk.h"
 #include "Math/AABB.h"
+#include "logic.h"
 
 class InputMananger : public Node
 {
@@ -16,6 +17,8 @@ class InputMananger : public Node
 
     void update() override
     {
+        if (Logic::pause)
+            return;
         glm::vec2 cursor_desk_pos = getCursorWorldPosition(input.getCursorPos()) + glm::vec2(3.5f);
         if (input.getMouseButtonPress(GLFW_MOUSE_BUTTON_LEFT))
         {

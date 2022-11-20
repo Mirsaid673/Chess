@@ -8,6 +8,7 @@ struct Vertex2d
     glm::vec2 texture_st;
 
     Vertex2d() = default;
+    Vertex2d(const glm::vec2 &_position) : position(_position) {}
     Vertex2d(const glm::vec2 &_position,
              const glm::vec2 &_texture_st) : position(_position), texture_st(_texture_st) {}
 };

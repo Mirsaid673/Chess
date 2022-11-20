@@ -1,5 +1,6 @@
 #include "piece.h"
 #include "desk.h"
+#include "logic.h"
 
 void Piece::onMouseDown(const glm::vec2 &mouse_world)
 {
@@ -17,7 +18,7 @@ void Piece::onMouseUp(const glm::vec2 &mouse_world)
     {
         moved = true;
 
-        Logic::desk->move(glm::ivec2(last_pos), new_pos);//anonymus object because we are telling the reference to method
+        Logic::desk->move(glm::ivec2(last_pos), new_pos); // anonymus object because we are telling the reference to method
 
         hideAvailableCells();
 
@@ -94,7 +95,7 @@ RID Piece::RookQuad;
 RID Piece::QueenQuad;
 RID Piece::KingQuad;
 
-std::vector<Vertex2d> Piece::getTexturePart(int index)
+void Piece::getTexturePart(std::vector<Vertex2d> &vertices, int index)
 {
     // 3 4 5
     // 0 1 2
@@ -113,12 +114,10 @@ std::vector<Vertex2d> Piece::getTexturePart(int index)
     for (auto &vert : verts)
         vert += glm::vec2(offset.x * (index % 3), offset.y);
 
-    return {
-        Vertex2d(glm::vec2(-0.5f, -0.5f), verts[0]), // left bottom
-        Vertex2d(glm::vec2(-.5f, .5f), verts[1]),    // left top
-        Vertex2d(glm::vec2(.5f, -.5f), verts[2]),    // right bottom
-        Vertex2d(glm::vec2(.5f, .5f), verts[3]),     // right top
-    };
+    vertices[0].texture_st = verts[0];
+    vertices[1].texture_st = verts[1];
+    vertices[2].texture_st = verts[2];
+    vertices[3].texture_st = verts[3];
 }
 
 void Piece::initialize(const char *white_texture, const char *black_texture)
@@ -126,22 +125,32 @@ void Piece::initialize(const char *white_texture, const char *black_texture)
     Mesh2d mesh;
     std::vector<uint32_t> indices = {0, 1, 2, 2, 1, 3};
     mesh.setIndices(indices);
-    mesh.setVertices(getTexturePart(0));
+    std::vector<Vertex2d> vertices = {Vertex2d(glm::vec2(-.5, -.5f)),
+                                      Vertex2d(glm::vec2(-.5f, .5f)),
+                                      Vertex2d(glm::vec2(.5f, -.5f)),
+                                      Vertex2d(glm::vec2(.5f, .5f))};
+    getTexturePart(vertices, 0);
+    mesh.setVertices(vertices);
     RookQuad = GPU::gpu.loadMesh(mesh);
 
-    mesh.setVertices(getTexturePart(1));
+    getTexturePart(vertices, 1);
+    mesh.setVertices(vertices);
     QueenQuad = GPU::gpu.loadMesh(mesh);
 
-    mesh.setVertices(getTexturePart(2));
+    getTexturePart(vertices, 2);
+    mesh.setVertices(vertices);
     KingQuad = GPU::gpu.loadMesh(mesh);
 
-    mesh.setVertices(getTexturePart(3));
+    getTexturePart(vertices, 3);
+    mesh.setVertices(vertices);
     PawnQuad = GPU::gpu.loadMesh(mesh);
 
-    mesh.setVertices(getTexturePart(4));
+    getTexturePart(vertices, 4);
+    mesh.setVertices(vertices);
     BishopQuad = GPU::gpu.loadMesh(mesh);
 
-    mesh.setVertices(getTexturePart(5));
+    getTexturePart(vertices, 5);
+    mesh.setVertices(vertices);
     KnightQuad = GPU::gpu.loadMesh(mesh);
 
     white_texture_atlas = GPU::gpu.createTexture(white_texture);

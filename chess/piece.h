@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../Engine/Core/application.h"
-#include "logic.h"
 #include "available_cells.h"
 #include <list>
 
@@ -45,7 +44,7 @@ private:
 public:
     Type type = Type::NONE;
     Color color = Color::EMPTY;
-    
+
     glm::ivec2 last_pos;
     AvailableCells available_cells;
     Transform2d transform;
@@ -99,7 +98,7 @@ public:
     static RID QueenQuad;
     static RID KingQuad;
 
-    static std::vector<Vertex2d> getTexturePart(int index);
+    static void getTexturePart(std::vector<Vertex2d> &vertices, int index);
     static void initialize(const char *white_texture, const char *black_texture);
     static void determinate();
 };

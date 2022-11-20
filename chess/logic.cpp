@@ -1,18 +1,36 @@
 #include "logic.h"
 #include "desk.h"
 #include <algorithm>
+#include "ui.h"
 
 Desk *Logic::desk;
 Piece *Logic::last_moved_piece = nullptr;
+Piece *Logic::turning_pawn;
 int8_t Logic::moving_color = 1;
+int8_t Logic::pawn_to_turn = Piece::Type::QUEEN_W;
+bool Logic::pause = false;
 
-Piece::Type pawn_to_turn = Piece::Type::KNIGHT_W;
+void Logic::onPawnTurn(Piece &piece)
+{
+    UI::setButtonsColor((Piece::Color)moving_color);
+    UI::showButtons();
+    turning_pawn = &piece;
+    pause = true;
+    // piece.setTypeNoColor((Piece::Type)pawn_to_turn);
+}
+
+void Logic::onButtonPress()
+{
+    turning_pawn->setTypeNoColor((Piece::Type)pawn_to_turn);
+    UI::hideButtons();
+    pause = false;
+}
 
 void onPawnMove(Piece &piece, int new_y)
 {
     int side = (piece.getColor() + 1) / 2 * 7; // translating from [-1, 1] to [0, 7]
     if (new_y == side)
-        piece.setTypeNoColor(pawn_to_turn);
+        Logic::onPawnTurn(piece);
 }
 
 bool canPawnMove(Piece &piece, const glm::ivec2 &new_pos)
@@ -89,7 +107,7 @@ bool isInside(const glm::ivec2 &pos)
     return pos.x >= 0 && pos.x <= 7 && pos.y >= 0 && pos.y <= 7;
 }
 
-bool isCellAttaced(const glm::ivec2& coord, Piece::Color attacing_color)
+bool isCellAttaced(const glm::ivec2 &coord, Piece::Color attacing_color)
 {
     const static glm::ivec2 diagonals[4] = {glm::ivec2(1, 1), glm::ivec2(-1, -1), glm::ivec2(-1, 1), glm::ivec2(1, -1)};
     for (const auto &dir : diagonals)
@@ -156,7 +174,7 @@ bool isCheck(Piece::Color color = (Piece::Color)Logic::moving_color)
 {
     return isCellAttaced(Logic::desk->getKingPos(color), (Piece::Color)-color);
 }
-bool isCheckAfertMove(const glm::ivec2& p1, const glm::ivec2& p2)
+bool isCheckAfertMove(const glm::ivec2 &p1, const glm::ivec2 &p2)
 {
     Logic::desk->falseMove(p1, p2);
 

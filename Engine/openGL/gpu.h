@@ -19,6 +19,7 @@ private:
 
     RID default_cube;
     RID default_quad;
+    RID default_button_quad;
 
 public:
     void init();
@@ -44,6 +45,7 @@ public:
 
     RID getDeafultCube() const { return default_cube; }
     RID getDeafultQuad() const { return default_quad; }
+    RID getDeafultButtonQuad() const { return default_button_quad; }
 
     //* textures
     RID createTexture(const Image &image, uint32_t mipmap_levels = 0, bool gamma_correcred = false);
